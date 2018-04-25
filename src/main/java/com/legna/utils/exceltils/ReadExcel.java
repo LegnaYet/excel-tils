@@ -18,7 +18,7 @@ public class ReadExcel {
     // 默认单元格格式化日期字符串
     private static SimpleDateFormat sdf = new SimpleDateFormat(  "yyyy-MM-dd HH:mm:ss");
     // 格式化数字
-    private static DecimalFormat nf = new DecimalFormat("0.00");
+    private static DecimalFormat nf = new DecimalFormat("0");
 
     public static ArrayList<ArrayList<Object>> readExcel(File file){
         if(file == null){
@@ -59,37 +59,32 @@ public class ReadExcel {
                 }
                 for( int j = row.getFirstCellNum() ; j <= row.getLastCellNum() ;j++){
                     cell = row.getCell(j);
-                    if(cell == null || cell.getCellType() == HSSFCell.CELL_TYPE_BLANK){
+                    if(cell == null ||cell.getCellTypeEnum().compareTo(CellType.BLANK)==0){
                         //当该单元格为空
                         if(j != row.getLastCellNum()){//判断是否是该行中最后一个单元格
                             colList.add("");
                         }
                         continue;
                     }
-                    switch(cell.getCellType()){
-                        case XSSFCell.CELL_TYPE_STRING:
-                            value = cell.getStringCellValue();
-                            break;
-                        case XSSFCell.CELL_TYPE_NUMERIC:
-                            if ("@".equals(cell.getCellStyle().getDataFormatString())) {
-                                value = df.format(cell.getNumericCellValue());
-                            } else if ("General".equals(cell.getCellStyle()
-                                    .getDataFormatString())) {
-                                value = nf.format(cell.getNumericCellValue());
-                            } else {
-                                value = sdf.format(HSSFDateUtil.getJavaDate(cell
-                                        .getNumericCellValue()));
-                            }
-                            break;
-                        case XSSFCell.CELL_TYPE_BOOLEAN:
-                            value = Boolean.valueOf(cell.getBooleanCellValue());
-                            break;
-                        case XSSFCell.CELL_TYPE_BLANK:
-                            value = "";
-                            break;
-                        default:
-                            value = cell.toString();
-                    }// end switch
+                    if (cell.getCellTypeEnum().compareTo(CellType.STRING)==0){
+                        value = cell.getStringCellValue();
+                    }else if(cell.getCellTypeEnum().compareTo(CellType.NUMERIC)==0){
+                        if ("@".equals(cell.getCellStyle().getDataFormatString())) {
+                            value = df.format(cell.getNumericCellValue());
+                        } else if ("General".equals(cell.getCellStyle()
+                                .getDataFormatString())) {
+                            value = nf.format(cell.getNumericCellValue());
+                        } else {
+                            value = sdf.format(HSSFDateUtil.getJavaDate(cell
+                                    .getNumericCellValue()));
+                        }
+                    }else if (cell.getCellTypeEnum().compareTo(CellType.BOOLEAN)==0){
+                        value = Boolean.valueOf(cell.getBooleanCellValue());
+                    }else if (cell.getCellTypeEnum().compareTo(CellType.BLANK)==0){
+                        value = "";
+                    }else {
+                        value=cell.toString();
+                    }
                     colList.add(value);
                 }//end for j
                 rowList.add(colList);
@@ -124,37 +119,32 @@ public class ReadExcel {
                 }
                 for( int j = row.getFirstCellNum() ; j <= row.getLastCellNum() ;j++){
                     cell = row.getCell(j);
-                    if(cell == null || cell.getCellType() == HSSFCell.CELL_TYPE_BLANK){
+                    if(cell == null ||cell.getCellTypeEnum().compareTo(CellType.BLANK)==0){
                         //当该单元格为空
                         if(j != row.getLastCellNum()){//判断是否是该行中最后一个单元格
                             colList.add("");
                         }
                         continue;
                     }
-                    switch(cell.getCellType()){
-                        case XSSFCell.CELL_TYPE_STRING:
-                            value = cell.getStringCellValue();
-                            break;
-                        case XSSFCell.CELL_TYPE_NUMERIC:
-                            if ("@".equals(cell.getCellStyle().getDataFormatString())) {
-                                value = df.format(cell.getNumericCellValue());
-                            } else if ("General".equals(cell.getCellStyle()
-                                    .getDataFormatString())) {
-                                value = nf.format(cell.getNumericCellValue());
-                            } else {
-                                value = sdf.format(HSSFDateUtil.getJavaDate(cell
-                                        .getNumericCellValue()));
-                            }
-                            break;
-                        case XSSFCell.CELL_TYPE_BOOLEAN:
-                            value = Boolean.valueOf(cell.getBooleanCellValue());
-                            break;
-                        case XSSFCell.CELL_TYPE_BLANK:
-                            value = "";
-                            break;
-                        default:
-                            value = cell.toString();
-                    }// end switch
+                    if (cell.getCellTypeEnum().compareTo(CellType.STRING)==0){
+                        value = cell.getStringCellValue();
+                    }else if(cell.getCellTypeEnum().compareTo(CellType.NUMERIC)==0){
+                        if ("@".equals(cell.getCellStyle().getDataFormatString())) {
+                            value = df.format(cell.getNumericCellValue());
+                        } else if ("General".equals(cell.getCellStyle()
+                                .getDataFormatString())) {
+                            value = nf.format(cell.getNumericCellValue());
+                        } else {
+                            value = sdf.format(HSSFDateUtil.getJavaDate(cell
+                                    .getNumericCellValue()));
+                        }
+                    }else if (cell.getCellTypeEnum().compareTo(CellType.BOOLEAN)==0){
+                        value = Boolean.valueOf(cell.getBooleanCellValue());
+                    }else if (cell.getCellTypeEnum().compareTo(CellType.BLANK)==0){
+                        value = "";
+                    }else {
+                        value=cell.toString();
+                    }
                     colList.add(value);
                 }//end for j
                 rowList.add(colList);
@@ -166,6 +156,7 @@ public class ReadExcel {
             return null;
         }
     }
+
 
 
     public static DecimalFormat getDf() {
