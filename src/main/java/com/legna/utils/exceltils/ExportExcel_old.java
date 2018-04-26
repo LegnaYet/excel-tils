@@ -4,6 +4,7 @@ package com.legna.utils.exceltils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
@@ -19,19 +20,19 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 较新版本Spring
+ * 旧版本Spring
+ * 本环境使用较新Spring，显示报错
  */
-public class ExportExcel extends AbstractXlsView {
+public class ExportExcel_old  extends AbstractExcelView {
     private String head;
     private String[] titles;
-    private Map<String,String> titleMap;
+    private Map<String, String> titleMap;
 
     /**
-     *
-     * @param head 表头
+     * @param head     表头
      * @param titleMap 表格项
      */
-    public ExportExcel(String head,Map<String,String> titleMap) {
+    public ExportExcel_old(String head, Map<String, String> titleMap) {
         this.head = head;
         this.titleMap = titleMap;
         Set<String> set = titleMap.keySet();
@@ -40,37 +41,40 @@ public class ExportExcel extends AbstractXlsView {
         this.titles = titles;
     }
 
-
     @Override
-    protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void buildExcelDocument(Map<String, Object> model,
+                                   HSSFWorkbook workbook, HttpServletRequest request,
+                                   HttpServletResponse response) throws Exception {
         //獲取數據
         List<Map<String, String>> list = (List<Map<String, String>>) model.get("excelList");
         //在workbook添加一個sheet
-        HSSFSheet sheet = (HSSFSheet) workbook.createSheet();
+        HSSFSheet sheet = workbook.createSheet();
         sheet.setDefaultColumnWidth(15);
+        HSSFCell cell = null;
 
         //设置表格标题
         HSSFRow row1 = sheet.createRow(0);
         HSSFCell cell1 = row1.createCell(0);
         cell1.setCellValue(head);
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, titles.length));
+
         HSSFRow row2 = sheet.createRow(1);
-
-        //遍历表格项
-        HSSFCell cell = null;
+        //遍歷標題
         for (int i = 0; i < titles.length; i++) {
-            cell = row2.createCell(i);
-            cell.setCellValue(titleMap.get(titles[i]));
+            //獲取位置
+            HSSFCell cell2 = row2.createCell(i);
+            cell2.setCellValue(titleMap.get(titles[i]));
         }
-
-
-        //添加数据
+        //數據寫出
         for (int i = 0; i < list.size(); i++) {
+            //獲取每一個map
             Map<String, String> map = list.get(i);
+            //一個map一行數據
             HSSFRow row = sheet.createRow(i + 2);
             for (int j = 0; j < titles.length; j++) {
-                //遍历各项，匹配到key值并填入
+                //遍歷標題，把key與標題匹配
                 String title = titles[j];
+                //判斷該內容存在mapzhong
                 if (map.containsKey(title)) {
                     row.createCell(j).setCellValue(transType(map.get(title)));
                 }
@@ -85,7 +89,6 @@ public class ExportExcel extends AbstractXlsView {
         ouputStream.flush();
         ouputStream.close();
     }
-
 
     public String transType(Object object) {
         if (object instanceof String) {
