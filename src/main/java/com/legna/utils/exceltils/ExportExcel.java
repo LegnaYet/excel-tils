@@ -19,15 +19,19 @@ import java.util.Map;
 public class ExportExcel extends AbstractXlsView {
     private String head;
     private String[] titles;
+    private Map<String,String> titleMap;
 
     /**
      *
      * @param head 表头
-     * @param titles 表格项
+     * @param titleMap 表格项
      */
-    public ExportExcel(String head,String[] titles) {
+    public ExportExcel(String head,Map<String,String> titleMap) {
         this.head=head;
-        this.titles = titles;
+        this.titleMap=titleMap;
+        String[] titles=null;
+        String[] strings = titleMap.keySet().toArray(titles);
+        this.titles = strings;
     }
 
 
@@ -50,7 +54,7 @@ public class ExportExcel extends AbstractXlsView {
         HSSFCell cell = null;
         for (int i = 0; i < titles.length; i++) {
             cell = row2.createCell(i);
-            cell.setCellValue(titles[i]);
+            cell.setCellValue(titleMap.get(titles[i]));
         }
 
 
@@ -74,19 +78,5 @@ public class ExportExcel extends AbstractXlsView {
         workbook.write(ouputStream);
         ouputStream.flush();
         ouputStream.close();
-    }
-
-    /**
-     * 根据需求编写内容，替换数据库中字段的名称
-     * @param title
-     * @return
-     */
-    public String transTitleToZh(String title){
-        switch (title){
-            //JDK1.7之后case可以匹配字符串类型
-            case "":
-                return "";
-        }
-        return null;
     }
 }
