@@ -5,6 +5,8 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
@@ -85,6 +87,13 @@ public class ExportExcel_old  extends AbstractExcelView {
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-disposition", "attachment;filename=" + filename);
         OutputStream ouputStream = response.getOutputStream();
+
+        /**
+         * 此处可以加方法替换指定列，方法见下 transStatus()
+         * 不推荐此方法，建议在dao层直接完成对数据的转换
+         */
+
+
         workbook.write(ouputStream);
         ouputStream.flush();
         ouputStream.close();
@@ -124,5 +133,22 @@ public class ExportExcel_old  extends AbstractExcelView {
         } else {
             return "";
         }
+    }
+
+    /**
+     * 根据需求 修改指定列
+     * @param workbook
+     * @param head
+     * @param column
+     * @param transMap
+     * @return
+     */
+    public Workbook transStatus(Workbook workbook,String head,int column,Map<String,String> transMap) {
+        Sheet sheet = workbook.getSheet(head);
+        for(int i =2;i<sheet.getLastRowNum();i++){
+            Cell cell = sheet.getRow(i).getCell(column);
+            cell.setCellValue(transMap.get(cell.getStringCellValue()));
+        }
+        return workbook;
     }
 }
